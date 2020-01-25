@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+<!--
+ = = = = Head
+-->
+{% block head %}
+<title>Spectrometer GUI</title>
+<LINK href="{{ url_for('static', filename='style.css') }}" rel="stylesheet" type="text/css">
+{% endblock %}
+
+
+<!--
+ = = = = Body
+-->
+{% block body %}
+<h1>Welcome!</h1>
+<button onclick="request_new_walk()">Get New Walk</button>
+<div id="svg-container" class="container"></div>
+<div id="log"></div>
+{% endblock %}
+
+<!--
+ = = = = Scripts
+-->
+{% block scripts %}
+<script src="{{ url_for('static', filename='socketio/socket.io.js') }}"></script>
+<script src="{{ url_for('static', filename='d3/d3.js') }}"></script>
+<script src="{{ url_for('static', filename='js/render_plot.js') }}"></script>
+{% endblock %}

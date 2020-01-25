@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Plot Rendering App</title>
+        <p>
+            <a href="{{ url_for('index') }}">Home</a>
+            <a href="{{ url_for('gui') }}">GUI</a>
+            <a href="{{ url_for('raw') }}">Raw</a>
+        </p>
+        {% block head %}{% endblock %}
+    </head>
+    
+    <body onload="request_new_walk()">
+        <hr>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul>
+            {% for ms in messages %}
+                <li>{{ ms }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% endwith %}
+        {% block body %}{% endblock %}
+        {% block scripts %}{% endblock %}
+    </body>
+</html>
