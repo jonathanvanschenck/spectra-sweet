@@ -31,10 +31,20 @@ class Namespace(_Namespace):
         print("sending message at python")
         self.emit('log_on_client', msg)
 
-class GUINamespace(Namespace):        
-    def on_get_new_walk(self):
-        print("getting new walk at python")
-        self.emit('recieve_new_walk', {'y': rw(100), 'x': list(range(100))})
+
+
+class GUINamespace(Namespace):
+    def on_setup_spectrometer(self,msg):
+        spec.parse_measure_type(**msg)
+        self.emit('set_up_plot', {'x': list(spec.x()),
+                                  'y': list(0*spec.y()),
+                                  'it': str(spec.get_state()[0]),
+                                  'ave': str(spec.get_state()[1])})
+    
+    def on_get_xy(self):
+        self.emit('update_xy', {'x': list(spec.x()),
+                                'y':list(spec.y())})
+        
         
 class RawNamespace(Namespace):
     def _cast_array(self,array):
