@@ -1,0 +1,43 @@
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 2px;
+}
+
+path#line-0 {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 2px;
+}
+
+path#line-1 {
+  fill: none;
+  stroke: red;
+  stroke-width: 2px;
+}
+
+path#line-2 {
+  fill: none;
+  stroke: green;
+  stroke-width: 2px;
+}
+
+.int_input {
+  width: 40px
+}
+
+.col { 
+  display: inline-block;
+  vertical-align: top;
+  border: 1px solid black;
+}
+
+.row_header { 
+  vertical-align: center;
+  text-align: center;
+  text-decoration: underline;
+}
+.row { 
+  vertical-align: center;
+  text-align: right;
+}
