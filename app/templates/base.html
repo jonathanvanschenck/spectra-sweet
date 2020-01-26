@@ -10,7 +10,7 @@
         {% block head %}{% endblock %}
     </head>
     
-    <body onload="request_new_walk()">
+    <body onload="on_load()">
         <hr>
         {% with messages = get_flashed_messages() %}
         {% if messages %}
@@ -23,6 +23,7 @@
 
         {% endwith %}
         {% block body %}{% endblock %}
+        <script>on_load = function() {};</script>
         {% block scripts %}{% endblock %}
     </body>
 </html>
