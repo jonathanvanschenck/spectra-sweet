@@ -13,6 +13,41 @@
 -->
 {% block body %}
 <h1>Woah!</h1>
-<p>Dude, you need, like, a socket.io connection here to drive the spectrometer direction.</p>
-<p>Eventually, I'll put some stuff here for how to use this funcitonality.</p>
+<p>
+    Dude, you need, like, a python-remote-object client to talk to the
+    spectrometer directly. Here's what you do pip install remote-object:
+</p>
+
+<p>
+    $ pip install remote-object
+</p>
+<p>
+    Now, the seabreeze-server object (that is, the spectrometer) is available
+    at this host (either an IP address or a url: look up at the url bar above
+    and take everything between "http://" and "/raw"), and port 8001. For example,
+    if this is IP address: 10.0.0.1, you can open up a python shell, and then
+    access via:
+</p>
+<p>
+    >>> import remote_object as ro
+</p>
+<p>
+    >>> c = ro.client.Client("10.0.0.1", 8001)
+</p>
+<p>
+    >>> print(c)
+</p>
+<p>
+    Which should print something like: "Remote Wrapper Spectrometer Manager : 
+    1 devices: Current: None" If you get something like: "Remote Wrapper 
+    pointed at 10.0.0.1:8001" it means the seabreeze-server is malfunctioning
+    and you should contact the system administrator.
+</p>
+<p>
+    Then that client object will give you access to the seabreeze-server object
+    which controls to spectrometer. See the documentation for 
+    <a href="https://github.com/jonathanvanschenck/python-seabreeze-server">
+    seabreeze-server</a> to see how to use it.
+</p>
+
 {% endblock %}

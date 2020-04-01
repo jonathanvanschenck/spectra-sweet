@@ -14,6 +14,7 @@
 -->
 {% block body %}
 <button onclick="add_overlay()">Add Overlay</button>
+<button onclick="save_as()">Save As</button>
 <div>
     <div class="parent">
         <div class="col" id="aquisition_settings">
@@ -51,5 +52,6 @@
 {% block scripts %}
 <script src="{{ url_for('static', filename='socketio/socket.io.js') }}"></script>
 <script src="{{ url_for('static', filename='d3/d3.js') }}"></script>
+<script src="{{ url_for('static', filename='filesaver/FileSaver_old.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/render_plot.js') }}"></script>
 {% endblock %}

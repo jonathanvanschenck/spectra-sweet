@@ -198,6 +198,15 @@ single = function() {
                         ave: ave_input.property("value")});
 };
 
+save_as = function() {
+    let res = [];
+    for (let d of current_data) {
+        res.push(d.x + "," + d.y + "\n");
+    };
+    let blob = new Blob(res, {type: "text/plaintext;charset=utf-8"});
+    saveAs(blob, "spectra.csv");
+};
+
 add_overlay = function() {
     overlays.push({data: current_data});
     console.log(overlays);
