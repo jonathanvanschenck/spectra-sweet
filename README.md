@@ -101,12 +101,12 @@ Now create a configuration file for `spectra-sweet` and another for `seabreeze-s
 ```bash
  $ sudo vim /etc/supervisor/conf.d/spectra-sweet.conf
 ```
-and dump in this replacing proper `/path/to`s:
+and dump in this replacing proper `/path/to`s and `user_name`:
 ```
 [program:spectra-sweet]
 command=/path/to/spectra-sweet/venv/bin/gunicorn wsgi --worker-class eventlet -w 1 --bind localhost:8000
 directory=/path/to/spectra-sweet
-user=jon
+user=user_name
 autostart=true
 autorestart=true
 stopasgroup=true
@@ -116,12 +116,12 @@ Then
 ```bash
  $ sudo vim /etc/supervisor/conf.d/seabreeze-server.conf
 ```
-and dump in this replacing proper `/path/to`s:
+and dump in this replacing proper `/path/to`s and `user_name`:
 ```
 [program:seabreeze-server]
 command=/path/to/spectra-sweet/venv/bin/python TCP/server.py
 directory=/path/to/spectra-sweet
-user=jon
+user=user_name
 autostart=true
 autorestart=true
 stopasgroup=true
