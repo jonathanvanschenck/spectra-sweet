@@ -40,17 +40,17 @@ Add this to the file
 # ...
 
 stream {
-    server (
+    server {
         listen 8001;
         proxy_pass 127.0.0.1:8002;
-    )
+    }
 }
 
 # ...
 ```
 Then reset the default `sites-allowed`, and create a new one:
 ```bash
- $ sudo mv /etc/ngnix/sites-enabled/default /etc/nginx/sites-enabled/.default
+ $ sudo mv /etc/nginx/sites-enabled/default /etc/nginx/sites-enabled/.default
  $ sudo vim /etc/nginx/sites-enabled/spectra-sweet
 ```
 and dump this into there, replacing `/path/to` with the proper path
