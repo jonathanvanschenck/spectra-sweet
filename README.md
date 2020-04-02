@@ -1,5 +1,5 @@
 # Spectra? Sweet!
-A web-based, open-source, user interface for OceanOptics spectrometers based on `python-seabreeze`, `python-flask`, `python-seabreeze-server` and `d3.js`
+A web-based, open-source, user interface for OceanOptics spectrometers based on `python-seabreeze`, `python-flask`, `python-seabreeze-server` and `d3.js` 
 
 # To setup
 ```bash
@@ -8,7 +8,6 @@ $ source venv/bin/activate
 (venv) $ pip install -r requirements.txt
 (venv) $ seabreeze_os_setup
 ```
-
 
 # To Run (local only)
 In one terminal:
