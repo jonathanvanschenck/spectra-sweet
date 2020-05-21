@@ -1,0 +1,3 @@
+seabreeze==1.0.1
+seabreeze-server==0.1.1
+seatease==0.3

@@ -1,0 +1,31 @@
+version: '3.7'
+
+services:
+  tcpserver:
+    build: ./tcpserver
+    container_name: tcpserver
+    restart: always
+    volumes:
+      - /dev:/dev
+    expose:
+      - 8002
+    networks:
+      my_network:
+        aliases:
+          - tcpserver-app
+
+
+  flask:
+    build: ./flask
+    container_name: Flask
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      SERVER_HOST: tcpserver-app
+      SERVER_PORT: 8002
+    networks:
+      my_network:
+
+networks:
+  my_network:

@@ -23,21 +23,21 @@ path#line-2 {
 }
 
 .int_input {
-  width: 40px
+  width: 80px
 }
-
-.col { 
+/*
+.col {
   display: inline-block;
   vertical-align: top;
   border: 1px solid black;
 }
 
-.row_header { 
+.row_header {
   vertical-align: center;
   text-align: center;
   text-decoration: underline;
 }
-.row { 
+.row {
   vertical-align: center;
   text-align: right;
-}
+} */

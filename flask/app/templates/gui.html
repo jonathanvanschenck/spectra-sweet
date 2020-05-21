@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+<!--
+ = = = = Head
+-->
+{% block head %}
+<title>Spectrometer GUI</title>
+<LINK href="{{ url_for('static', filename='style.css') }}" rel="stylesheet" type="text/css">
+{% endblock %}
+
+
+<!--
+ = = = = Body
+-->
+{% block body %}
+<div class="container">
+  <button class="btn btn-primary" onclick="add_overlay()">Add Overlay</button>
+  <button class="btn btn-primary" onclick="save_as()">Save As</button>
+
+  <div class="row">
+      <div class="card bg-warning col-sm" id="aquisition_settings">
+          <div class="row">
+              <div class="col-sm" id="state">
+                  <div class="row_header">State Params</div>
+                  <div class="" style="text-align:left;">IT: <input class="int_input" id="it" type="text"/>ms</div>
+                  <div class="" style="text-align:left;">Ave: <input class="int_input" id="ave" type="text"/></div>
+              </div>
+              <div class="col-sm" id="buttons">
+                  <div class="row_header">Controls</div>
+                  <div class=""><button id="play-button" class="btn btn-dark" onclick="play()">&#9654;</button></div><!--Play-->
+                  <div class=""><button id="pause-button" class="btn btn-dark" onclick="pause()">&#x23f8;</button></div><!--Pause-->
+                  <div class=""><button id="single-button" class="btn btn-dark" onclick="single()">&#x23ef;</button></div><!--Single-->
+              </div>
+          </div>
+      </div>
+      <div class="card bg-warning col-sm" id="x_type">
+          <div class="row_header">x scale</div>
+      </div>
+      <div class="card bg-warning col-sm" id="y_type">
+          <div class="row_header">y scale</div>
+      </div>
+  </div>
+
+  <div id="svg-container"></div>
+  <div id="current-trace" visibility="hidden"></div>
+  <div id="log"></div>
+
+</div>
+{% endblock %}
+
+<!--
+ = = = = Scripts
+-->
+{% block scripts %}
+<script src="{{ url_for('static', filename='socketio/socket.io.js') }}"></script>
+<script src="{{ url_for('static', filename='d3/d3.js') }}"></script>
+<script src="{{ url_for('static', filename='filesaver/FileSaver_old.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/render_plot.js') }}"></script>
+{% endblock %}

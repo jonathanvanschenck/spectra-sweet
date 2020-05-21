@@ -1,11 +1,15 @@
 #%%
 import numpy as np
 import time
+import os
 
 import seabreeze_server as sbs
-    
+
+host = os.environ.get("SERVER_HOST") or "localhost"
+port = os.environ.get("SERVER_PORT") or 8002
+
 class WebSpectrometer:
-    def __init__(self, HOST = "localhost", PORT = 8002):
+    def __init__(self, HOST = host, PORT = int(port)):
         self.specObj = sbs.client.SeaBreezeClient(HOST, PORT)
         self.specObj.select_spectrometer()
         self.set_it(100)
@@ -13,25 +17,25 @@ class WebSpectrometer:
         self.__wave = self.specObj.get_wavelengths()
         self.__dark = 0*self.__wave
         self.__white = np.ones_like(self.__wave)
-        
+
         self.x = self.wavelengths
         def y():
             return self.intensities()
         self.y = y
-        
+
     def set_it(self,it):
         self.__it = int(it)
         self.specObj.set_integration_time_micros(self.__it*1000)
-        
+
     def set_ave(self,ave):
         self.__ave = int(np.clip(ave,1,1000))
-        
+
     def get_state(self):
         return self.__it,self.__ave
-    
+
     def wavelengths(self):
         return self.specObj.get_wavelengths()
-    
+
     def intensities(self,zeroed=False):
         res = 0*self.specObj.get_wavelengths()
         for _ in range(self.__ave):
@@ -40,24 +44,24 @@ class WebSpectrometer:
             return res/self.__ave-self.__dark
         else:
             return res/self.__ave
-    
+
     def intensities_stamp(self,zeroed=False):
         res = self.intensities(zeroed=zeroed)
         t = time.time()
         return t,res
-    
+
     def set_dark(self):
         self.__dark = self.intensities(zeroed=False)
-        
+
     def get_dark(self):
         return self.__dark.copy()
-    
+
     def set_white(self):
         self.__white = self.intensities(zeroed=False)
-        
+
     def get_white(self):
         return self.__white.copy()
-    
+
     def parse_measure_type(self,**kwargs):
         it = kwargs.pop('it',None)
         if it:
@@ -107,4 +111,3 @@ class WebSpectrometer:
                 def x():
                     return 1e7/self.wavelengths()
             self.x = x
-                
