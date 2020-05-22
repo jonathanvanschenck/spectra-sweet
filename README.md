@@ -1,23 +1,28 @@
 # Spectra? Sweet!
-A web-based, open-source, user interface for OceanOptics spectrometers based on `python-seabreeze`, `python-flask`, `python-seabreeze-server` and `d3.js` 
+A web-based, open-source, user interface for OceanOptics spectrometers based on `python-seabreeze`, `python-flask`, `python-seabreeze-server` and `d3.js`
 
-# To setup
+# Development
+## To setup
 ```bash
-$ python3 -m venv venv
-$ source venv/bin/activate
-(venv) $ pip install -r requirements.txt
-(venv) $ seabreeze_os_setup
+ $ cd tcpserver
+ $ docker build . -t tcpserver
+ $ cd ../flask
+ $ python3 -m venv venv
+ $ source venv/bin/activate
+ (venv) $ pip install -r requirements.txt
+ (venv) $ seabreeze_os_setup
 ```
 
-# To Run (local only)
+## To Run (local only)
 In one terminal:
 ```bash
- (venv) $ python TCP/server.py
-
+ (venv) $ ../tcpserver/scripts/run_local.sh
+ (venv) $ gunicorn wsgi --worker-class eventlet --bind localhost:8000
 ```
-In another terminal:
+
+## To clean up
 ```bash
- (venv) $ gunicorn wsgi --worker-class eventlet -w 1 --bind localhost:8000
+ (venv) $ docker kill CONTAINTER_NAME_HERE
 ```
 
 # To Run (on server)
@@ -57,7 +62,7 @@ and dump this into there, replacing `/path/to` with the proper path
 server {
 	listen 80;
 	server_name _;
-	
+
 	access_log /var/log/spectra-sweet_access.log;
 	error_log /var/log/spectra-sweet_error.log;
 

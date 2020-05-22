@@ -22,22 +22,12 @@ path#line-2 {
   stroke-width: 2px;
 }
 
-.int_input {
+/* .int_input {
   width: 80px
-}
-/*
-.col {
-  display: inline-block;
-  vertical-align: top;
-  border: 1px solid black;
-}
+} */
 
 .row_header {
   vertical-align: center;
   text-align: center;
   text-decoration: underline;
 }
-.row {
-  vertical-align: center;
-  text-align: right;
-} */

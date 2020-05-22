@@ -3,8 +3,8 @@
 <!--
  = = = = Head
 -->
-{% block head %}
-<title>Web Spectrometer</title>
+{% block title %}
+Web Spectrometer
 {% endblock %}
 
 
@@ -12,17 +12,19 @@
  = = = = Body
 -->
 {% block body %}
-<h1>Welcome!</h1>
-<p>
-    This is a controller for OceanOptics spectrometers which uses
-    as a base seabreeze, flask, socket.io and d3.js to allow gui-like and 
-    direct websocket connections.
-</p>
-<p>
-    <a href="{{ url_for('gui') }}">Click Here</a> for the GUI interface.
-</p>
-<p>
-    <a href="{{ url_for('raw') }}">Click Here</a> for the instructions to
-    access the spectrometer directly.
-</p>
+<div class="container">
+  <h1>Welcome!</h1>
+  <p>
+      This is a controller for OceanOptics spectrometers which uses
+      as a base seabreeze, flask, socket.io and d3.js to allow gui-like and
+      direct websocket connections.
+  </p>
+  <p>
+      <a href="{{ url_for('gui') }}">Click Here</a> for the GUI interface.
+  </p>
+  <p>
+      <a href="{{ url_for('raw') }}">Click Here</a> for the instructions to
+      access the spectrometer directly.
+  </p>
+</div>
 {% endblock %}

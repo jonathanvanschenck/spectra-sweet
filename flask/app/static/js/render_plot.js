@@ -9,36 +9,13 @@ var continuous_run = true;
 var current_data = [];
 var overlays = [];
 
-// SVG prep
-var svg = d3.select("div#svg-container").append("svg")
-            .attr("width",width+2*margin)
-            .attr("height",height+2*margin)
-            .classed("svg-content",true) // Set class to svg-contentf
-            .append("g")
-            .attr("transform",
-                "translate(" + margin + "," + margin + ")");
-            
-// Axes prep
-var x = d3.scaleLinear().range([0,width]).domain([0,100]);
-var y = d3.scaleLinear().range([height,0]).domain([-30,30]);
+// Plotter prep
+var plot = new Plot("div#svg-container", width, height, margin)
 
 window.addEventListener('resize', function(event){
     width = (window.innerWidth * 5 / 6) - 2 * margin;
     height = window.innerHeight * 4 / 6;
-    x.range([0,width]);
-    y.range([height,0]);
-    d3.select(".svg-content")
-            .attr("width",width+2*margin)
-            .attr("height",height+2*margin);
-    d3.select("g#xaxis-containter").remove();
-    d3.select("g#yaxis-containter").remove();
-    svg.append("g")
-        .attr("transform","translate(0," + height + ")")
-        .attr("id","xaxis-containter")
-        .call(d3.axisBottom(x));
-    svg.append("g")
-        .attr("id","yaxis-containter")
-        .call(d3.axisLeft(y));
+    plot.resize(width,hieght,margin).draw_axes();
 });
 
 
@@ -49,6 +26,9 @@ x_type_defaults = [{},{value: 'nm', name: 'Wavelength'},
 d3.select("#x_type").selectAll("div")
     .data(x_type_defaults).enter().append("div")
     .classed("row", true)
+    .classed("m-0", true).append("div")
+    .classed("col", true)
+    .classed("text-center", true)
     .text(function (d) {return d.name;})
     .insert("input")
     .attr("type","radio")
@@ -60,7 +40,7 @@ d3.select("#x_type").selectAll("div")
     .on("change",function() {
         setup_spectrometer({x_type: this.value});
     });
-    
+
 y_type_defaults = [{},{value: 'i', name: 'Intensity'},
                     {value: 'z', name: 'Zeroed'},
                     {value: 't', name: 'Transmission'},
@@ -69,6 +49,9 @@ y_type_defaults = [{},{value: 'i', name: 'Intensity'},
 d3.select("#y_type").selectAll("div")
     .data(y_type_defaults).enter().append("div")
     .classed("row", true)
+    .classed("m-0", true).append("div")
+    .classed("col", true)
+    .classed("text-center", true)
     .text(function (d) {return d.name;})
     .insert("input")
     .attr("type","radio")
@@ -80,7 +63,7 @@ d3.select("#y_type").selectAll("div")
     .on("change",function() {
         setup_spectrometer({y_type: this.value});
     });
-    
+
 var it_input = d3.select("#it");
 var ave_input = d3.select("#ave");
 
@@ -111,42 +94,21 @@ setup_spectrometer = function(params) {
 };
 
 socket.on('set_up_plot', function(msg) {
-    x.domain(d3.extent(msg.x));
-    y.domain([0,4000]);
-    d3.select("g#xaxis-containter").remove();
-    d3.select("g#yaxis-containter").remove();
-    svg.append("g")
-        .attr("transform","translate(0," + height + ")")
-        .attr("id","xaxis-containter")
-        .call(d3.axisBottom(x));
-    svg.append("g")
-        .attr("id","yaxis-containter")
-        .call(d3.axisLeft(y));
-    specLine = d3.line()
-                .x(function(dd) { 
-                    return x(dd.x); 
-                })
-                .y(function(dd) { 
-                    return y(dd.y);
-                });
-        
-    current_data = msg.y.map(function(yy,i) {
-        return {x: msg.x[i], y: yy};
-    });
-    // Clear old lines
-    d3.selectAll("path.line").remove();
-    // Draw Lines
-    svg.append("path")
-        .attr("d",specLine(current_data))
-        .attr("id","line-" + 0)
-        .attr("class","line")
-        .style("stroke-opacity", 1.0)
-        .text('Walk');
-    
-    it_input.property("value",msg.it)
-    ave_input.property("value",msg.ave)
-    
-    get_xy()
+
+  current_data = msg.y.map(function(yy,i) {
+      return {x: msg.x[i], y: yy};
+  });
+  // console.log(current_data)
+  plot.set_active_data(current_data)
+      .set_x_scale("wavelength")
+      .set_y_scale("intensities")
+      .draw_axes()
+      .draw_line();
+
+  it_input.property("value",msg.it)
+  ave_input.property("value",msg.ave)
+
+  get_xy()
 });
 
 get_xy = function() {
@@ -154,27 +116,13 @@ get_xy = function() {
 };
 
 socket.on('update_xy', function(msg) {
-    specLine = d3.line()
-                .x(function(dd) { 
-                    return x(dd.x); 
-                })
-                .y(function(dd) { 
-                    return y(dd.y);
-                });
-        
     current_data = msg.y.map(function(yy,i) {
         return {x: msg.x[i], y: yy};
     });
-    // Clear old lines
-    d3.selectAll("path.line").remove()
-    // Draw Lines
-    svg.append("path")
-        .attr("d",specLine(current_data))
-        .attr("id","line-" + 0)
-        .attr("class","line")
-        .style("stroke-opacity", 1.0)
-        .text('Walk');
-    
+
+    plot.update_active_data(current_data)
+        .draw_line();
+
     if (continuous_run) {
         get_xy();
     };
@@ -207,36 +155,7 @@ save_as = function() {
     saveAs(blob, "spectra.csv");
 };
 
-add_overlay = function() {
-    overlays.push({data: current_data});
-    console.log(overlays);
-    specLine = d3.line()
-                .x(function(dd) { 
-                    return x(dd.x); 
-                })
-                .y(function(dd) { 
-                    return y(dd.y);
-                });
-    // Clear old overlays
-    d3.selectAll("path.line").remove()
-    d3.selectAll("path.overlay").remove()
-    // Draw overlays
-    svg.selectAll("path")
-        .data([{data: current_data}].concat(overlays)).enter()
-        .append("path")
-        .attr("d",function (d) {return specLine(d.data);})
-        .attr("id",function (d,i) {return "line-" + i;})
-        .attr("class",function (d,i) {
-            if (i ==0) {
-                return "line";
-            } else {
-                return "overlay"
-            }
-        })
-        .style("stroke-opacity", 1.0)
-        .text('Walk');
-        
-};
+add_overlay = function() {};
 
 on_load = function() {
     setup_spectrometer();
