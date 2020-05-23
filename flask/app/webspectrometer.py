@@ -14,9 +14,6 @@ class WebSpectrometer:
         self.specObj.select_spectrometer()
         self.set_it(100)
         self.set_ave(1)
-        self.__wave = self.specObj.get_wavelengths()
-        self.__dark = 0*self.__wave
-        self.__white = np.ones_like(self.__wave)
 
         self.x = self.wavelengths
         def y():
@@ -50,17 +47,6 @@ class WebSpectrometer:
         t = time.time()
         return t,res
 
-    def set_dark(self):
-        self.__dark = self.intensities(zeroed=False)
-
-    def get_dark(self):
-        return self.__dark.copy()
-
-    def set_white(self):
-        self.__white = self.intensities(zeroed=False)
-
-    def get_white(self):
-        return self.__white.copy()
 
     def parse_measure_type(self,**kwargs):
         it = kwargs.pop('it',None)
@@ -79,35 +65,3 @@ class WebSpectrometer:
                 pass
             else:
                 self.set_ave(_ave)
-        y_type = kwargs.pop("y_type",None)
-        if y_type:
-            y = self.y
-            if y_type == "i":
-                def y():
-                    return self.intensities()
-            elif y_type == "z":
-                def y():
-                    return self.intensities(zeroed=True)
-            elif y_type == "r":
-                def y():
-                    return 1-(self.intensities(zeroed=True)/(self.__white-self.__dark))
-            elif y_type == "t":
-                def y():
-                    return (self.intensities(zeroed=True)/(self.__white-self.__dark))
-            elif y_type == "a":
-                def y():
-                    return -np.log10(self.intensities(zeroed=True)/(self.__white-self.__dark))
-            self.y = y
-        x_type = kwargs.pop("x_type",None)
-        if x_type:
-            x = self.x
-            if x_type == "nm":
-                def x():
-                    return self.wavelengths()
-            elif x_type == "ev":
-                def x():
-                    return 1238/self.wavelengths()
-            elif x_type == "wn":
-                def x():
-                    return 1e7/self.wavelengths()
-            self.x = x

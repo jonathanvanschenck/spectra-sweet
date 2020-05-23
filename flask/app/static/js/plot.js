@@ -17,19 +17,19 @@ const x_conv = {
 const y_conv = {
   intensities: {
     map:(d) => {return d.y;},
-    check: (obj) => true,
+    check: (obj) => {return true;},
     unit: "counts",
     lim: [0,4000]
   },
   zeroed: {
     map:(d) => {return d.y-d.d;},
-    check: (obj) => obj.has_dark(),
+    check: (obj) => {return obj.has_dark();},
     unit: "counts",
     lim: [0,4000]
   },
   absorbance: {
-    map:(d) => {return -math.log10((d.y-d.d)/(d.w-d.d));},
-    check: (obj) => obj.has_dark() && obj.has_white(),
+    map:(d) => {return -Math.log10((d.y-d.d)/(d.w-d.d));},
+    check: (obj) => {return obj.has_dark() && obj.has_white();},
     unit: "A.U.",
     lim: [0,2.5]
   }
@@ -53,40 +53,48 @@ class Line {
     this.check = y_conv[name].check
     return this
   };
+  can_plot(name) {
+    return y_conv[name].check(this);
+  };
 
-  set_data(data){
-    this.data = data;
-    return this
-  }
-  update_data(data) {
-    this.data.forEach((d,i) => {d.x = data[i].x; d.y = data[i].y});
-    return this
-  };
-  update_xdata(data) {
-    this.data.forEach((d,i) => {d.x = data[i].x});
-    return this
-  };
-  update_ydata(data) {
-    this.data.forEach((d,i) => {d.y = data[i].y});
+  set_data(data) {
+    // Function sets xy data (doesn't effect d/w if they exist)
+    data.forEach((d,i) => {
+      // Ensure data entry exists
+      if (!this.data[i]) {
+        this.data[i] = {};
+      }
+      // Write over xy (but not d/w if they exist)
+      this.data[i].x = d.x;
+      this.data[i].y = d.y;
+    });
     return this
   };
 
   set_white(data) {
+    // NOTE: Should I include a check that data and this.data have the same length?
     this.data.forEach((d,i) => {d.w = data[i].y});
     return this
   };
   has_white() {
-    return !!this.data[0].w
-  }
+    // Ensure all data points have a "w"
+    let bool = true;
+    this.data.forEach((d,i) => {bool = bool && !!d.w});
+    return bool;
+  };
   set_dark(data) {
+    // NOTE: Should I include a check that data and this.data have the same length?
     this.data.forEach((d,i) => {d.d = data[i].y});
     return this
   };
   has_dark() {
-    return !!this.data[0].d
+    // Ensure all data points have a "d"
+    let bool = true;
+    this.data.forEach((d,i) => {bool = bool && !!d.d});
+    return bool;
   };
 
-  get_data() {
+  get_XY() {
     if (!this.check(this)) {
       return [];
     }
@@ -162,15 +170,15 @@ class Axes {
     return d3.axisLeft(this.y)
   }
 
-  // Get transformer for plotting data
+  // Get transformer for converting XY data to px,py space
   get_transformer() {
     let x = this.x;
     let y = this.y;
-    return d3.line().x(function(dd) {
-                        return x(dd.X);
+    return d3.line().x(function(d) {
+                        return x(d.X);
                     })
-                    .y(function(dd) {
-                        return y(dd.Y);
+                    .y(function(d) {
+                        return y(d.Y);
                     })
   }
 }
@@ -229,18 +237,13 @@ class Plot{
 
     return this
   };
-  update_active_data(data){
-    this.line.update_data(data);
-
-    return this
-  };
 
   draw_line() {
     // Clear line
     this.viewport.selectAll("#line-0").remove();
     // Draw Line
     this.viewport.append("path")
-        .attr("d",this.ax.get_transformer()(this.line.get_data()))
+        .attr("d",this.ax.get_transformer()(this.line.get_XY()))
         .attr("id","line-0")
         .attr("class","line")
         .style("stroke-opacity", 1.0)
@@ -250,7 +253,7 @@ class Plot{
 
   set_x_scale(name) {
     this.line.set_x_scale(name);
-    let x = this.line.get_data().map(d => {return d.X});
+    let x = this.line.get_XY().map(d => {return d.X});
     this.ax.set_x_lim(d3.extent(x));
 
     return this
@@ -261,4 +264,13 @@ class Plot{
 
     return this
   };
+
+  set_dark() {
+    this.line.set_dark(this.line.data);
+    return this
+  }
+  set_white() {
+    this.line.set_white(this.line.data);
+    return this
+  }
 };
