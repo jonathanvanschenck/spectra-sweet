@@ -32,6 +32,6 @@ path#line-2 {
   text-decoration: underline;
 }
 
-/* .btn-disabled {
-  opacity: 0.3;
-} */
+.btn-disabled {
+  opacity: 0.3 !important;
+}
