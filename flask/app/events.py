@@ -28,7 +28,7 @@ class GUINamespace(Namespace):
     def on_setup_spectrometer(self,msg):
         spec.parse_measure_type(**msg)
         self.emit('set_up_plot', {'x': list(spec.x()),
-                                  'y': list(0*spec.y()),
+                                  'y': list(spec.y()),
                                   'it': str(spec.get_state()[0]),
                                   'ave': str(spec.get_state()[1])})
 

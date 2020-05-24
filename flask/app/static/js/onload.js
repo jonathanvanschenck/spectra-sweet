@@ -41,6 +41,7 @@ on_load = function() {
         plot.set_x_scale(this.value)
             .draw_axes()
             .draw_line()
+            .draw_overlays()
       });
 
   let y_type_defaults = [{},{value: 'intensities', name: 'Intensities', abled: true},
@@ -68,6 +69,7 @@ on_load = function() {
         plot.set_y_scale(this.value)
             .draw_axes()
             .draw_line()
+            .draw_overlays()
       });
 
   setup_spectrometer();

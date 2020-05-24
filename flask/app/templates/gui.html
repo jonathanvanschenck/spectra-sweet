@@ -17,7 +17,9 @@ Spectrometer GUI
 {% block body %}
 <div class="container">
   <button class="btn btn-primary" onclick="add_overlay()">Add Overlay</button>
-  <button class="btn btn-primary" onclick="save_as()">Save As</button>
+  <button class="btn btn-primary" onclick="save_active()">Save Active</button>
+  <button class="btn btn-primary" onclick="save_all()">Save Overlays</button>
+  <button class="btn btn-primary" onclick="save_raw()">Save Raw</button>
 
   <div class="row m-0">
       <div class="card bg-light col-sm p-0" id="aquisition_settings">
@@ -81,7 +83,7 @@ Spectrometer GUI
 
   <div id="svg-container"></div>
   <div id="current-trace" visibility="hidden"></div>
-  <div id="log"></div>
+  <div id="overlay-tag-container"></div>
 
 </div>
 {% endblock %}

@@ -4,27 +4,72 @@
   stroke-width: 2px;
 }
 
-path#line-0 {
+path.line {
   fill: none;
-  stroke: steelblue;
   stroke-width: 2px;
+}
+
+path#line-0 {
+  stroke: steelblue;
 }
 
 path#line-1 {
-  fill: none;
   stroke: red;
-  stroke-width: 2px;
 }
 
 path#line-2 {
-  fill: none;
   stroke: green;
-  stroke-width: 2px;
 }
 
-/* .int_input {
-  width: 80px
-} */
+path#line-3 {
+  stroke: SaddleBrown;
+}
+
+path#line-4 {
+  stroke: Goldenrod;
+}
+
+path#line-5 {
+  stroke: Cyan;
+}
+
+path#line-6 {
+  stroke: black;
+}
+
+path#line-7 {
+  stroke: Tan;
+}
+
+path#line-8 {
+  stroke: Maroon;
+}
+
+path#line-9 {
+  stroke: CornflowerBlue;
+}
+
+path#line-10 {
+  stroke: DarkSeaGreen;
+}
+
+path#line-11 {
+  stroke: DarkSlateGrey;
+}
+
+path#line-12 {
+  stroke: Gold;
+}
+
+path#line-13 {
+  stroke: DeepSkyBlue;
+}
+
+path#line-14 {
+  stroke: BlueViolet;
+}
+
+
 
 .row_header {
   vertical-align: center;

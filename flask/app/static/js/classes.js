@@ -28,7 +28,7 @@ const y_conv = {
     lim: [0,4000]
   },
   absorbance: {
-    map:(d) => {return -Math.log10((d.y-d.d)/(d.w-d.d));},
+    map:(d) => {return Math.log10((d.y-d.d)/(d.w-d.d));},
     check: (obj) => {return obj.has_dark() && obj.has_white();},
     unit: "A.U.",
     lim: [0,2.5]
@@ -45,12 +45,14 @@ class Line {
   };
 
   set_x_scale(name) {
-    this.X = x_conv[name].map
+    this.X = x_conv[name].map;
+    this.x_scale_name = name;
     return this
   };
   set_y_scale(name) {
     this.Y = y_conv[name].map
     this.check = y_conv[name].check
+    this.y_scale_name = name;
     return this
   };
   can_plot(name) {
@@ -107,6 +109,16 @@ class Line {
       };
     })
   };
+
+  copy() {
+    let newData = this.data.map((d) => {
+      let obj = {x:d.x, y:d.y}
+      if (!!d.w) {obj.w = d.w}
+      if (!!d.d) {obj.d = d.d}
+      return obj
+    });
+    return new Line(newData,this.x_scale_name,this.y_scale_name);
+  }
 }
 
 
@@ -124,6 +136,7 @@ class Axes {
 
   set_width(width) {
     this.x.range([0,width]);
+    this.width = width;
     return this
   };
   get_width() {
@@ -132,6 +145,7 @@ class Axes {
 
   set_height(height) {
     this.y.range([height,0]);
+    this.height = height;
     return this
   };
   get_height() {
@@ -160,7 +174,6 @@ class Axes {
   set_y_lim(xmin,xmax) {
     return this.__set_lim('y',xmin,xmax)
   };
-
 
   // Get axis generators for attaching to plot
   get_x_generator() {
@@ -197,6 +210,9 @@ class Plot{
     // Active line Prep
     this.line = new Line([])
 
+    // Overlay line prep
+    this.overlays = [];
+
     // Connect and draw
     this.resize(width,height,margin).draw_axes();
 
@@ -204,6 +220,9 @@ class Plot{
   };
 
   resize(width,height,margin) {
+    this.width = width;
+    this.height = height;
+    this.margin = margin;
     // Totally clear the viewport
     // this.viewport.selectAll().remove()
     // Set w/h
@@ -217,9 +236,11 @@ class Plot{
   };
 
   draw_axes() {
-    // Remove any old axes
-    this.viewport.selectAll("g#xaxis-containter").remove();
-    this.viewport.selectAll("g#yaxis-containter").remove();
+    // Remove any old axes or lines
+    this.viewport.selectAll("g").remove();
+    this.viewport.selectAll("path").remove();
+    this.viewport.selectAll("text").remove();
+
     // Attach new axes
     this.viewport.append("g")
         .attr("transform","translate(0," + this.ax.get_height() + ")")
@@ -228,6 +249,19 @@ class Plot{
     this.viewport.append("g")
         .attr("id","yaxis-containter")
         .call(this.ax.get_y_generator());
+
+    // Attach labels
+    this.viewport.append("text")
+        .attr("transform", "translate(" + (this.width / 2) + "," + (this.height + this.margin) + ")")
+        .style("text-anchor", "middle")
+        .text(this.x_label);
+    this.viewport.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - this.margin)
+        .attr("x",0 - (this.height / 2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text(this.y_label);
 
     return this
   };
@@ -251,18 +285,67 @@ class Plot{
     return this
   }
 
+  attach_overlay() {
+    this.overlays.push(this.line.copy())
+
+    return this
+  };
+
+  drop_overlay(i) {
+    this.overlays = this.overlays.slice(0,i).concat(this.overlays.slice(i+1))
+
+    return this
+  }
+
+  drop_all_overlays(i) {
+    this.overlays = []
+
+    return this
+  }
+
+  draw_overlays() {
+    // Clear old overlays
+    this.viewport.selectAll(".line").filter(function() {
+      return !(this.id === "line-0");
+    }).remove();
+
+    // Draw overlays
+    this.overlays.map((overlay,i) => {
+      this.viewport.append("path")
+          .attr("d",this.ax.get_transformer()(overlay.get_XY()))
+          .attr("id","line-" + (i+1))
+          .attr("class","line")
+          .style("stroke-opacity", 1.0)
+    });
+
+    return this
+  };
+
   set_x_scale(name) {
     this.line.set_x_scale(name);
+    this.overlays.map((overlay) => {overlay.set_x_scale(name)});
     let x = this.line.get_XY().map(d => {return d.X});
     this.ax.set_x_lim(d3.extent(x));
+    this.set_x_label(name);
 
     return this
   };
   set_y_scale(name) {
     this.line.set_y_scale(name);
+    this.overlays.map((overlay) => {overlay.set_y_scale(name)});
     this.ax.set_y_lim(y_conv[name].lim);
+    this.set_y_label(name);
 
     return this
+  };
+
+  set_x_label(label) {
+    this.x_label = label;
+    return this;
+  };
+  set_y_label(label) {
+    this.y_label = label;
+    return this;
   };
 
   set_dark() {
