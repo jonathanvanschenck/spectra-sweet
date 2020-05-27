@@ -65,3 +65,48 @@ class WebSpectrometer:
                 pass
             else:
                 self.set_ave(_ave)
+
+class WebSpectrometerManager:
+    def __init__(self, HOST = host, PORT = int(port)):
+        self.specObj = sbs.client.SeaBreezeClient(HOST, PORT)
+        self.it = 100
+        self.ave = 1
+        self._wavelengths = np.array([0])
+
+    @property
+    def it(self):
+        return self.__it
+    @it.setter
+    def it(self,IT):
+        self.__it = int(IT)
+        try:
+            self.specObj.set_integration_time_micros(self.it*1000)
+        except sbs.SeaBreezeServerError:
+            pass
+    @property
+    def ave(self):
+        return self.__ave
+    @ave.setter
+    def ave(self,AVE):
+        self.__ave = int(AVE)
+
+    def device_list(self):
+        return self.specObj.device_list()
+
+    def select_spectrometer(self,index):
+        self.specObj.select_spectrometer(index)
+        self.specObj.set_integration_time_micros(self.it*1000)
+        self._wavelengths = self.specObj.get_wavelengths()
+
+    def deselect_spectrometer(self):
+        self.specObj.deselect_spectrometer()
+
+    def wavelengths(self):
+        return self._wavelengths
+
+    def intensities(self):
+        res = 0*self.wavelengths()
+        for _ in range(self.ave):
+            res = res + self.specObj.get_intensities()
+        else:
+            return res/self.ave

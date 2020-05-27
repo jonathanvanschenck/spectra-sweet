@@ -81,7 +81,7 @@ class Line {
   has_white() {
     // Ensure all data points have a "w"
     let bool = true;
-    this.data.forEach((d,i) => {bool = bool && !!d.w});
+    this.data.forEach((d,i) => {bool = bool && !(d.w===undefined)});
     return bool;
   };
   set_dark(data) {
@@ -92,7 +92,7 @@ class Line {
   has_dark() {
     // Ensure all data points have a "d"
     let bool = true;
-    this.data.forEach((d,i) => {bool = bool && !!d.d});
+    this.data.forEach((d,i) => {bool = bool && !(d.d===undefined)});
     return bool;
   };
 
@@ -113,8 +113,8 @@ class Line {
   copy() {
     let newData = this.data.map((d) => {
       let obj = {x:d.x, y:d.y}
-      if (!!d.w) {obj.w = d.w}
-      if (!!d.d) {obj.d = d.d}
+      if (!(d.w===undefined)) {obj.w = d.w}
+      if (!(d.d===undefined)) {obj.d = d.d}
       return obj
     });
     return new Line(newData,this.x_scale_name,this.y_scale_name);

@@ -50,7 +50,11 @@ socket.on('set_up_plot', function(msg) {
   it_input.property("value",msg.it)
   ave_input.property("value",msg.ave)
 
-  get_xy()
+  // get_xy()
+  if (continuous_run) {
+    // setTimeout(get_xy,10);
+    get_xy();
+  };
 });
 
 get_xy = function() {
@@ -66,7 +70,8 @@ socket.on('update_xy', function(msg) {
         .draw_line();
 
     if (continuous_run) {
-        get_xy();
+      // setTimeout(get_xy,10);
+      get_xy();
     };
 });
 
