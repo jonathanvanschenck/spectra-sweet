@@ -16,11 +16,11 @@ monotonic==1.5
 numpy==1.18.2
 python-engineio==3.11.1
 python-socketio==4.4.0
-remote-object==0.2.1
+remote-object==0.2.4
 requests==2.22.0
 seabreeze==1.0.1
-seabreeze-server==0.1.1
-seatease==0.3
+seabreeze-server==0.2.0
+seatease==0.3.2
 six==1.13.0
 socketIO-client==0.7.2
 urllib3==1.25.7
