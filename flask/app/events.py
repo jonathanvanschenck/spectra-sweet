@@ -3,11 +3,11 @@ from flask import copy_current_request_context
 from flask_socketio import disconnect
 from flask_socketio import Namespace as _Namespace
 from seabreeze_server import SeaBreezeServerError
+from seabreeze.cseabreeze import SeaBreezeError
 
-from app.webspectrometer import WebSpectrometer#,WebSpectrometerManager
+from app.webspectrometer import WebSpectrometerManager
 
-spec = WebSpectrometer()
-# sm = WebSpectrometerManager()
+sm = WebSpectrometerManager()
 
 class Namespace(_Namespace):
     def on_connect(self):
@@ -25,37 +25,47 @@ class Namespace(_Namespace):
         self.emit('log_on_client', msg)
 
 
+# TODO: ConnectionRefusedError is broken, since LITERALLY EVERYTHING requires
+#  The server to be up. Maybe add a whole wrapper error check?
 
 class GUINamespace(Namespace):
-    # def on_select_spectrometer(self,msg):
-    #     index = int(msg['index'])
-    #     dev_list = sm.list_devices()
-    #     success = True
-    #     try:
-    #         sm.select_spectrometer(index)
-    #     except SeaBreezeServerError:
-    #         success = False
-    #     self.emit('attach_spectrometer_result',{'index':str(index),'dev_list':dev_list,'success':success})
-    #
-    # def on_deselect_spectrometer(self):
-    #     sm.deselect_spectrometer()
-    #     self.emit('update_device_list',{'dev_list':sm.list_devices()})
-    #
-    # def on_get_device_list(self):
-    #     self.emit('update_device_list',{'dev_list':sm.list_devices()})
-    #
-    # def on_con
+    def on_select_spectrometer(self,msg):
+        index = int(msg['index'])
+        success = True
+        try:
+            sm.select_spectrometer(index)
+        except (SeaBreezeServerError,ConnectionRefusedError):
+            self.emit('detach_spectrometer',{'dev_list':sm.list_devices()})
+        self.emit('attach_spectrometer',{'serial_number':sm.serial_number})
 
+    def on_deselect_spectrometer(self):
+        sm.deselect_spectrometer()
+        self.emit('detach_spectrometer',{'dev_list':sm.list_devices()})
+
+    def on_get_device_list(self):
+        self.emit('update_device_list',{'dev_list':sm.list_devices()})
 
     def on_setup_spectrometer(self,msg):
-        spec.parse_measure_type(**msg)
-        self.emit('set_up_plot', {'x': list(spec.x()),
-                                  'y': list(spec.y()),
-                                  'it': str(spec.get_state()[0]),
-                                  'ave': str(spec.get_state()[1])})
+        try:
+            sm.parse_measure_type(**msg)
+            i = sm.intensities()
+        except (SeaBreezeServerError,SeaBreezeError,ConnectionRefusedError):
+            # either not selected, or not opened, or docker dead
+            self.emit('detach_spectrometer',{'dev_list':sm.list_devices()})
+        else:
+            self.emit('set_up_plot', {'x': list(sm.wavelengths()),
+                                      'y': list(i),
+                                      'it': str(sm.it),
+                                      'ave': str(sm.ave)})
 
     def on_get_xy(self):
-        self.emit('update_xy', {'x': list(spec.x()),
-                                'y':list(spec.y())})
+        try:
+            i = sm.intensities()
+        except (SeaBreezeServerError,SeaBreezeError,ConnectionRefusedError):
+            # either not selected, or not opened, or docker dead
+            self.emit('detach_spectrometer',{'dev_list':sm.list_devices()})
+        else:
+            self.emit('update_xy', {'x': list(sm.wavelengths()),
+                                    'y': list(i)})
 
 socketio.on_namespace(GUINamespace('/plot'))

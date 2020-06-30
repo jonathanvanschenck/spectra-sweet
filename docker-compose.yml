@@ -9,6 +9,9 @@ services:
       - /dev:/dev
     expose:
       - 8002
+    privileged: true
+    environment:
+      - EMULATE=0
     networks:
       my_network:
         aliases:
@@ -17,10 +20,12 @@ services:
 
   flask:
     build: ./flask
-    container_name: Flask
+    container_name: flask
     restart: always
     ports:
       - "8000:8000"
+    depends_on:
+      - tcpserver
     environment:
       SERVER_HOST: tcpserver-app
       SERVER_PORT: 8002

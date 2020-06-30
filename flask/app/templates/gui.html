@@ -22,6 +22,22 @@ Spectrometer GUI
   <button class="btn btn-primary" onclick="save_raw()">Save Raw</button>
 
   <div class="row m-0">
+    <div class="card bg-light col-sm p-0" id="dev-list">
+      <div class="row m-0">
+        <div class="col my-auto">
+          <div class="row_header">Devices</div>
+        </div>
+      </div>
+      <div class="row m-0">
+        <div class="col my-auto text-center">
+          <button class="btn btn-info" onclick="request_update_device_list()">Rescan</button>
+          <span id="dev-serial-number"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row m-0">
       <div class="card bg-light col-sm p-0" id="aquisition_settings">
           <div class="row m-0">
               <div class="col-7 my-auto" id="state">
@@ -55,13 +71,13 @@ Spectrometer GUI
               <div class="col-5 my-auto" id="buttons">
                 <div class="row_header">Controls</div>
                 <div class="row m-1">
-                  <button id="play-button" class="btn btn-success w-100 text-center" onclick="play()">&#9654;</button>
+                  <button id="play-button" class="btn btn-success w-100 text-center" onclick="play()" disabled>&#9654;</button>
                 </div>
                 <div class="row m-1">
-                  <button id="pause-button" class="btn btn-success w-100 text-center" onclick="pause()">&#x23f8;</button>
+                  <button id="pause-button" class="btn btn-success w-100 text-center" onclick="pause()" disabled>&#x23f8;</button>
                 </div>
                 <div class="row m-1">
-                  <button id="single-button" class="btn btn-success w-100 text-center" onclick="single()">&#x23ef;</button>
+                  <button id="single-button" class="btn btn-success w-100 text-center" onclick="single()" disabled>&#x23ef;</button>
                 </div>
               </div>
           </div>
