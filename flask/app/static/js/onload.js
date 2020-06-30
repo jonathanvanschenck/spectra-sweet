@@ -73,4 +73,5 @@ on_load = function() {
       });
 
   setup_spectrometer();
+  // request_update_device_list();
 };

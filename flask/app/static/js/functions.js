@@ -8,6 +8,7 @@ var plot = new Plot("div#svg-container", width, height, margin);
 var it_input = d3.select("#it");
 var ave_input = d3.select("#ave");
 var overlay_tags = d3.select("#overlay-tag-container");
+var dev_list = d3.select("#dev-list");
 
 
 // ----- Setup the socket connection ----- //
@@ -70,10 +71,73 @@ socket.on('update_xy', function(msg) {
         .draw_line();
 
     if (continuous_run) {
-      // setTimeout(get_xy,10);
       get_xy();
     };
 });
+
+
+socket.on('detach_spectrometer', function(msg) {
+  // Deactivate Buttons
+  d3.select("#play-button").attr('disabled',true).classed('btn-disabled',true);
+  d3.select("#pause-button").attr('disabled',true).classed('btn-disabled',true);
+  d3.select("#single-button").attr('disabled',true).classed('btn-disabled',true);
+  d3.select("#dev-serial-number").text("None");
+  // Turn spectrometer off
+  continuous_run = false;
+  // Warn user
+  alert("Spectrometer(s) Detached");
+  // Upadate the device list
+  update_device_list(msg.dev_list);
+});
+
+socket.on('attach_spectrometer', function(msg) {
+  // Clear the device list
+  dev_list.selectAll("div.dev-row").remove();
+
+  // Activate Buttons
+  d3.select("#play-button").attr('disabled',null).classed('btn-disabled',false);
+  d3.select("#pause-button").attr('disabled',null).classed('btn-disabled',false);
+  d3.select("#single-button").attr('disabled',null).classed('btn-disabled',false);
+  d3.select("#dev-serial-number").text(msg.serial_number);
+
+  // Setup the spectrometer to run
+  continuous_run = true;
+  setup_spectrometer();
+});
+
+request_update_device_list = function() {
+  socket.emit('get_device_list');
+};
+
+socket.on('update_device_list', function(msg) {
+    update_device_list(msg.dev_list);
+});
+
+update_device_list = function(new_dev_list) {
+  // Clear the device list
+  dev_list.selectAll("div.dev-row").remove();
+  //
+  // // Attach new device list
+  new_dev_list.map(function(d,i) {
+    dev_list.append('div')
+            .classed('row',true)
+            .classed('m-0',true)
+            .classed('dev-row',true)
+            .append('div')
+            .classed('col',true)
+            .classed('text-center',true)
+            .classed('my-auto',true)
+            .append('button')
+            .classed('btn',true)
+            .classed('btn-success',true)
+            .classed('w-100',true)
+            .classed('text-center',true)
+            .text(d)
+            .on('click', function() {
+              socket.emit('select_spectrometer', {index: i});
+            });
+  });
+};
 
 
 // ----- Button Functions ----- //
