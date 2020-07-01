@@ -1,6 +1,15 @@
 # Spectra? Sweet!
 A web-based, open-source, user interface for OceanOptics spectrometers based on `python-seabreeze`, `python-flask`, `python-seabreeze-server` and `d3.js`
 
+# Usage
+Current usage requires `docker-compose` to function properly. Simply run:
+```bash
+ $ docker-compose build
+ $ docker-compose up
+```
+Then, the GUI should be hosted at http://localhost:8000 accessable from the browser.
+You can see the deployment section below for some ideas for hosting `nginx` as a reverse proxy.
+
 # Development
 ## To setup
 ```bash
